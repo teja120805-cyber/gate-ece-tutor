@@ -1,0 +1,240 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ───────────── Design tokens ─────────────
+   Light is the default: a calm, warm palette — cream-beige page, soft off-white cards, warm greys,
+   indigo accent. Easy on the eyes for long study sessions. Dark mirrors the same roles. */
+:root {
+  color-scheme: light;
+  --background: #f5efe4;      /* cream beige */
+  --foreground: #2b2620;      /* warm near-black (softer than pure black) */
+  --card: #fffcf6;            /* warm off-white */
+  --card-soft: #faf5ec;
+  --muted: #f0e9dc;
+  --muted-foreground: #6c6457;
+  --border: #e8dfcf;
+  --border-strong: #d9cdb8;
+  --primary: #5149d8;
+  --primary-strong: #4239c4;
+  --primary-foreground: #ffffff;
+  --accent: #eeeaf8;          /* soft lavender wash, tuned for cream */
+  --accent-foreground: #4038b8;
+  --danger: #c92a2a;
+  --success: #2f7a3c;
+  --warning: #a8590c;
+  --ring: #6a63e0;
+  --shadow-sm: 0 1px 2px rgb(74 56 28 / 0.05), 0 1px 3px rgb(74 56 28 / 0.06);
+  --shadow-md: 0 4px 12px -2px rgb(74 56 28 / 0.09), 0 2px 4px -2px rgb(74 56 28 / 0.05);
+  --shadow-lg: 0 20px 40px -12px rgb(74 56 28 / 0.2);
+
+  /* Mastery stages (validated categorical trio; always shown with a text label or legend). */
+  --stage-none: #e6ddcc;
+  --stage-learning: #eda100;
+  --stage-practicing: #2a78d6;
+  --stage-mastered: #1baf7a;
+
+  /* Sequential blue ramp for magnitude (heatmaps, score tiles): low recedes toward the surface. */
+  --seq-0: #ece4d6;
+  --seq-1: #cde2fb;
+  --seq-2: #9ec5f4;
+  --seq-3: #6da7ec;
+  --seq-4: #3987e5;
+  --seq-5: #1c5cab;
+
+  /* Status for marks (right / wrong / not attempted). */
+  --good: #0ca30c;
+  --critical: #d03b3b;
+  --neutral: #bdb5a6;
+
+  /* Chart chrome */
+  --viz-grid: #ebe2d3;
+  --viz-axis: #8c8475;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #0d0f17;
+  --foreground: #e8e9f1;
+  --card: #151824;
+  --card-soft: #181b28;
+  --muted: #1d2030;
+  --muted-foreground: #9a9fb3;
+  --border: #272b3c;
+  --border-strong: #343951;
+  --primary: #8b8ff8;
+  --primary-strong: #a5a8fb;
+  --primary-foreground: #0d0f17;
+  --accent: #222544;
+  --accent-foreground: #b9bcff;
+  --danger: #f87171;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --ring: #8b8ff8;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 20px 40px -12px rgb(0 0 0 / 0.6);
+
+  --stage-none: #2a2e40;
+  --stage-learning: #c98500;
+  --stage-practicing: #3987e5;
+  --stage-mastered: #199e70;
+
+  --seq-0: #1d2030;
+  --seq-1: #184f95;
+  --seq-2: #1c5cab;
+  --seq-3: #2a78d6;
+  --seq-4: #5598e7;
+  --seq-5: #9ec5f4;
+
+  --good: #0ca30c;
+  --critical: #e05252;
+  --neutral: #4a4f63;
+
+  --viz-grid: #262a3a;
+  --viz-axis: #7d8296;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-soft: var(--card-soft);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-ring: var(--ring);
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  --shadow-card: var(--shadow-sm);
+  --shadow-raised: var(--shadow-md);
+  --shadow-float: var(--shadow-lg);
+  --animate-fade-in: fade-in 0.25s ease-out;
+  --animate-pop: pop 0.18s ease-out;
+}
+
+@keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
+
+/* ───────────── Base ───────────── */
+html, body { background: var(--background); color: var(--foreground); }
+body {
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* A faint wash of colour at the top of the page keeps the light theme from feeling flat. */
+  background-image:
+    radial-gradient(60rem 28rem at 12% -8rem, rgb(251 191 136 / 0.16), transparent 70%),
+    radial-gradient(50rem 24rem at 95% -10rem, rgb(196 181 253 / 0.10), transparent 70%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+.dark body {
+  background-image:
+    radial-gradient(60rem 28rem at 12% -8rem, rgb(99 102 241 / 0.10), transparent 70%),
+    radial-gradient(50rem 24rem at 95% -10rem, rgb(14 165 233 / 0.06), transparent 70%);
+}
+* { border-color: var(--border); }
+::selection { background: rgb(253 186 116 / 0.35); }
+:focus-visible:not(input, textarea, select) { outline: 2px solid var(--ring); outline-offset: 2px; }
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline: none; }
+button:focus:not(:focus-visible) { outline: none; }
+
+/* Slim scrollbars */
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; border: 3px solid transparent; background-clip: content-box; }
+
+/* Soft gradient surfaces for hero areas */
+.hero-wash {
+  background:
+    radial-gradient(40rem 20rem at 0% 0%, rgb(253 186 140 / 0.20), transparent 60%),
+    radial-gradient(36rem 18rem at 100% 0%, rgb(196 181 253 / 0.20), transparent 60%),
+    radial-gradient(30rem 16rem at 60% 120%, rgb(167 214 170 / 0.16), transparent 60%),
+    var(--card);
+}
+.dark .hero-wash {
+  background:
+    radial-gradient(40rem 20rem at 0% 0%, rgb(99 102 241 / 0.22), transparent 60%),
+    radial-gradient(36rem 18rem at 100% 0%, rgb(56 189 248 / 0.12), transparent 60%),
+    radial-gradient(30rem 16rem at 60% 120%, rgb(167 139 250 / 0.14), transparent 60%),
+    var(--card);
+}
+.exam-wash {
+  background:
+    radial-gradient(36rem 18rem at 0% 0%, rgb(244 63 94 / 0.10), transparent 60%),
+    radial-gradient(30rem 16rem at 100% 0%, rgb(251 146 60 / 0.10), transparent 60%),
+    var(--card);
+}
+.dark .exam-wash {
+  background:
+    radial-gradient(36rem 18rem at 0% 0%, rgb(244 63 94 / 0.16), transparent 60%),
+    radial-gradient(30rem 16rem at 100% 0%, rgb(251 146 60 / 0.10), transparent 60%),
+    var(--card);
+}
+
+/* ───────────── Lesson / solution typography ───────────── */
+.prose-lesson { line-height: 1.8; font-size: 1.0125rem; overflow-wrap: anywhere; color: var(--foreground); }
+.prose-lesson > * + * { margin-top: 0.95em; }
+.prose-lesson h1 { font-size: 1.7rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 0.4em; }
+.prose-lesson h2 {
+  font-size: 1.28rem; font-weight: 650; letter-spacing: -0.01em; line-height: 1.35;
+  margin-top: 2em; padding-left: 0.75rem; border-left: 3px solid var(--primary);
+  scroll-margin-top: 5rem;
+}
+.prose-lesson h3 { font-size: 1.08rem; font-weight: 620; margin-top: 1.5em; scroll-margin-top: 5rem; }
+.prose-lesson ul { list-style: disc; padding-left: 1.4em; }
+.prose-lesson ol { list-style: decimal; padding-left: 1.4em; }
+.prose-lesson li::marker { color: var(--primary); }
+.prose-lesson li + li { margin-top: 0.35em; }
+/* Key-idea callouts: warm sand on the cream theme, indigo wash in dark mode. */
+.prose-lesson blockquote {
+  border: 1px solid #ead8b6; background: #fbf1df;
+  padding: 0.75em 1.05em; border-radius: 0.85rem; color: var(--foreground);
+}
+.dark .prose-lesson blockquote { border-color: rgb(99 102 241 / 0.22); background: var(--accent); }
+.prose-lesson code { background: var(--muted); padding: 0.12em 0.4em; border-radius: 0.35em; font-size: 0.88em; font-family: var(--font-mono); }
+.prose-lesson pre { background: var(--muted); padding: 0.9em 1.1em; border-radius: 0.75rem; overflow-x: auto; border: 1px solid var(--border); }
+.prose-lesson pre code { background: transparent; padding: 0; }
+.prose-lesson table {
+  border-collapse: separate; border-spacing: 0; width: 100%; font-size: 0.94em;
+  display: block; overflow-x: auto; border: 1px solid var(--border); border-radius: 0.75rem;
+}
+.prose-lesson th, .prose-lesson td { border-bottom: 1px solid var(--border); padding: 0.5em 0.8em; text-align: left; }
+.prose-lesson tr:last-child td { border-bottom: 0; }
+.prose-lesson th + th, .prose-lesson td + td { border-left: 1px solid var(--border); }
+.prose-lesson th { background: var(--card-soft); font-weight: 600; font-size: 0.92em; }
+.prose-lesson strong { font-weight: 650; }
+.prose-lesson a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+.prose-lesson hr { border-color: var(--border); margin: 1.8em 0; }
+.prose-lesson .katex-display {
+  overflow-x: auto; overflow-y: hidden; padding: 0.55em 0.75em; margin: 1em 0;
+  background: var(--card-soft); border: 1px solid var(--border); border-radius: 0.75rem;
+}
+.prose-compact { line-height: 1.65; }
+.prose-compact > * + * { margin-top: 0.55em; }
+.prose-compact h1, .prose-compact h2, .prose-compact h3 { font-size: 1.02rem; font-weight: 600; margin-top: 0.9em; border: 0; padding: 0; }
+.prose-compact ul { list-style: disc; padding-left: 1.3em; }
+.prose-compact ol { list-style: decimal; padding-left: 1.3em; }
+.prose-compact .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.2em 0; }
+.prose-compact table { border-collapse: collapse; display: block; overflow-x: auto; font-size: 0.93em; }
+.prose-compact th, .prose-compact td { border: 1px solid var(--border); padding: 0.3em 0.6em; }
+
+/* Range inputs pick up the accent colour */
+input[type="range"] { accent-color: var(--primary); }
+input[type="checkbox"] { accent-color: var(--primary); width: 1rem; height: 1rem; }
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; color: black; background-image: none; }
+}
